@@ -45,6 +45,7 @@ function setupInput() {
             }
         }
         else if (e.key == 'Enter') {
+            e.preventDefault();
             if (cursor.j < 5 || cursor.i == 4) {
                 return;
             } else {
