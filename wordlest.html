@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordlest</title>
+    <script src="wordlest.js"></script>
+    <script src="ui.js"></script>
+    <style>
+        body {
+            font-family: Montserrat, sans-serif;
+        }
+        header {
+            display: flex;
+            justify-content: center;
+            font-size: 40px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid black;
+            margin-bottom: 12px;
+        }
+        row {
+            display: flex;
+            justify-content: center;
+        }
+        box {
+            display: inline-flex;
+
+            width: 80px;
+            height: 80px;
+
+            border: 4px solid black;
+            border-radius: 6px;
+
+            font-size: 40px;
+
+            margin: 10px;
+
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            user-select: none;
+        }
+        box:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        box.correct {
+            background-color: rgb(6, 214, 6);
+        }
+        box.correct:hover {
+            background-color: rgb(5, 194, 5);
+        }
+        box.incorrect-position {
+            background-color: rgb(255, 205, 39);
+        }
+        box.incorrect-position:hover {
+            background-color: rgb(236, 189, 38);
+        }
+        box.incorrect {
+            background-color: rgb(175, 175, 175);
+        }
+        box.incorrect:hover {
+            background-color: rgb(155, 155, 155);
+        }
+        #hidden-input {
+            display: none;
+        }
+        answers {
+            position: absolute;
+
+            width: 250px;
+        
+            overflow-y: scroll;
+            max-height: 60vh;
+
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        answers::-webkit-scrollbar {
+            display: none;
+        }
+        answers ul {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            border-radius: 4px;
+            padding: 12px;
+            width: 120px;
+        }
+        answers ul li {
+            list-style-type: none;
+            font-size: 30px;
+            text-align: center;
+        }
+        #sorting-type {
+            position: fixed;
+            transform: translate(160px, 10px);
+
+            display: block;
+
+            width: 50px;
+            height: 50px;
+
+            background: none;
+
+            border: 2px solid black;
+            border-radius: 2px;
+            
+            cursor: pointer;
+        }
+        #sorting-type:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        WORDLEST
+    </header>
+    <row>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+    </row>
+    <row>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+    </row>
+    <row>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+    </row>
+    <row>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+    </row>
+    <row>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+    </row>
+    <row>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+        <box></box>
+    </row>
+    <answers class="hidden">
+        <button id="sorting-type" title="Sort By Ranking" class="ranking">
+            123
+        </button>
+        <ul id="answers-list">
+        </ul>
+    </answers>
+</body>
+</html>
