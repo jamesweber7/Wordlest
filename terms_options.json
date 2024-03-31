@@ -1,4 +1,4 @@
 {
-    "ranked" : true,
-    "alphabetical": false
+    "ranked" : false,
+    "alphabetical": true
 }

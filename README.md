@@ -1,6 +1,9 @@
 # Wordlest
 A [Wordle](https://www.nytimes.com/games/wordle/index.html) assisstance tool that lists all words that are still available as potential answers given previous guesses. Also features the option to rank and sort the available words by which how much information a guess is expected to yield.
 
+## Shardle Branch
+This branch is for playing [Shardle](https://shardle.17thshard.com/). This is the wordle variant I made this software for, so I am adding this branch that I can host and easily access.
+
 [Try it Out](https://main.d2v659lifdp0in.amplifyapp.com/)
 [Demonstration on YouTube](https://youtu.be/zMLS2GLCLH4)
 
