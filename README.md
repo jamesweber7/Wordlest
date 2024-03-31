@@ -4,7 +4,9 @@ A [Wordle](https://www.nytimes.com/games/wordle/index.html) assisstance tool tha
 ## Shardle Branch
 This branch is for playing [Shardle](https://shardle.17thshard.com/). This is the wordle variant I made this software for, so I am adding this branch that I can host and easily access.
 
-[Try it Out](https://main.d2v659lifdp0in.amplifyapp.com/)
+[Try out Sharle varient](https://shardle.d1sgzopp8x3tu4.amplifyapp.com/)
+
+[Try out standard Wordle version](https://main.d2v659lifdp0in.amplifyapp.com/)
 [Demonstration on YouTube](https://youtu.be/zMLS2GLCLH4)
 
 I like playing a Wordle variant called [Shardle](https://shardle.17thshard.com/) on hard mode, which means that each guess needs to be a potentially correct answer given previous clues. Unfortunately, I'm not nearly smart enough to be good at playing on hard mode, and I often become stuck because I can't think of any words that fit with my restrictions. I started playing around and made this tool which shows what words are still possible correct answers. I was honestly surprised at how quickly I was able to throw this together and have it work well - the basic functionality was put together in 1 1/2 hours, the ui was put together another 1 1/2 hours, and the ranking algorithm plus some touch ups were done in 3 hours.
