@@ -46,7 +46,7 @@ function setupInput() {
         }
         else if (e.key == 'Enter') {
             e.preventDefault();
-            if (cursor.j < 5 || cursor.i == 4) {
+            if (cursor.j < 5 || cursor.i > 5) {
                 return;
             } else {
                 incorrectRow();
