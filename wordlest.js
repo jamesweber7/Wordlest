@@ -74,7 +74,7 @@ function isPossible(term, exact_matches, unknown_positions, misses) {
 // this one sorts based on how many remaining possible answers are expected after guess
 // I'm not entirely sure that this method is perfect, as it suggests "RAISE" is the best starting word, and I can't find many sources which agree
 // O(n³) - slow
-function sortTermsByExpectedPossibleRemaining(possible) {
+function sortTermsByExpectedPossibleRemainingSlow(possible) {
     let total_checks = 0;
     const scores = Array(possible.length);
     possible.forEach((term, index) => {
@@ -95,25 +95,26 @@ function sortTermsByExpectedPossibleRemaining(possible) {
                         });
                         break;
                     case 'y':
-                        let found = false;
-                        unknown_positions.forEach(unknown => {
+                        for (const unknown of unknown_positions) {
                             if (unknown.char == char) {
-                                found = true;
-                                unknown.incorrect_positions.push(i);
-                                unknown.instances = 0;
-                                for (let j = 0; j < 5; j++) {
-                                    if (term[j] == char && matching[j] == 'g' || matching[j] == 'y')
-                                        unknown.instances ++;
-                                }
+                                break;
                             }
-                        });
-                        if (!found) {
-                            unknown_positions.push({
-                                char: char,
-                                incorrect_positions: [i],
-                                instances: 1
-                            })
                         }
+                        let incorrect_positions = [];
+                        let instances = 0;
+                        for (let j = 0; j < 5; j++) {
+                            if (term[j] == char) {
+                                if (matching[j] == 'g' || matching[j] == 'y')
+                                    instances ++;
+                                if (matching[j] == 'y')
+                                    incorrect_positions.push(j);
+                            }
+                        }
+                        unknown_positions.push({
+                            char: char,
+                            incorrect_positions: incorrect_positions,
+                            instances: instances
+                        })
                         break;
                     case 'b':
                         misses.push(char);
@@ -123,7 +124,6 @@ function sortTermsByExpectedPossibleRemaining(possible) {
             possible.forEach(possible_term => {
                 if (isPossible(possible_term, exact_matches, unknown_positions, misses)) {
                     total_score ++;
-                    // console.log(`answer ${potential_answer}, guess ${term}, possible ${possible_term}`)
                 }
                 total_checks ++;
             })
@@ -151,24 +151,17 @@ function sortTermsByExpectedPossibleRemaining(possible) {
     return sorted;
 }
 
-// I think I may be able to make this O(n²) by removing from list of remaining things
-// nvmd, pretty sure I was onto nothing
-// idk maybe this could work? I think I got mixed up when I started this and took the wrong approach, but potentially initially had the right idea?
+// This is faster than sortTermsByExpectedPossibleRemainingSlow.
+// 70,000 on n=100 - maybe is O(n²√n) with room to perform better? idk exactly what time complexity is
+// For some reason, this can produce a slightly different output than sortTermsByExpectedPossibleRemainingSlow. I'm really not sure why
 function sortTermsByExpectedPossibleRemainingFast(possible) {
     let total_checks = 0;
     const scores = Array(possible.length);
     possible.forEach((term, index) => {
         let total_score = 0;
         const potential_answers = [...possible];
-        let prev;
         while (potential_answers.length) {
-            // const potential_answer = potential_answers.shift();
             const potential_answer = potential_answers[0];
-            if (prev == potential_answer) {
-                console.log("uh oh!", term, potential_answer);
-                throw "ah"
-            }
-            prev = potential_answer;
             const matching = matchTerms(term, potential_answer);
             const exact_matches = [];
             const unknown_positions = [];
@@ -184,25 +177,26 @@ function sortTermsByExpectedPossibleRemainingFast(possible) {
                         });
                         break;
                     case 'y':
-                        let found = false;
-                        unknown_positions.forEach(unknown => {
+                        for (const unknown of unknown_positions) {
                             if (unknown.char == char) {
-                                found = true;
-                                unknown.incorrect_positions.push(i);
-                                unknown.instances = 0;
-                                for (let j = 0; j < 5; j++) {
-                                    if (term[j] == char && matching[j] == 'g' || matching[j] == 'y')
-                                        unknown.instances ++;
-                                }
+                                break;
                             }
-                        });
-                        if (!found) {
-                            unknown_positions.push({
-                                char: char,
-                                incorrect_positions: [i],
-                                instances: 1
-                            })
                         }
+                        let incorrect_positions = [];
+                        let instances = 0;
+                        for (let j = 0; j < 5; j++) {
+                            if (term[j] == char) {
+                                if (matching[j] == 'g' || matching[j] == 'y')
+                                    instances ++;
+                                if (matching[j] == 'y')
+                                    incorrect_positions.push(j);
+                            }
+                        }
+                        unknown_positions.push({
+                            char: char,
+                            incorrect_positions: incorrect_positions,
+                            instances: instances
+                        })
                         break;
                     case 'b':
                         misses.push(char);
