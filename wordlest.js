@@ -140,7 +140,7 @@ function sortTermsByExpectedPossibleRemaining(possible) {
 
     const sorted = Array(rankings.length);
     rankings.forEach((ranking, i) => {
-        sorted[i] = ranking.term;
+        sorted[sorted.length - i - 1] = ranking.term;
     })
 
     return sorted;
