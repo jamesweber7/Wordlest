@@ -26,44 +26,49 @@ function findPossibleTerms(terms, exact_matches, unknown_positions, misses) {
     // misses: ['p', 'o', 'n']
     let possible = [];
     terms.forEach(term => {
-        let accounted_for = [];
-        let unaccounted_for = [0, 1, 2, 3, 4];
-
-        for (const match of exact_matches) {
-            accounted_for.push(match.i)
-            if (term[match.i] != match.char)
-                return;
-        }
-
-        unaccounted_for = unaccounted_for.filter(i => !accounted_for.includes(i));
-        
-        for (const unknown_position of unknown_positions) {
-            // char is in wrong position
-            for (const i of unknown_position.incorrect_positions) {
-                if (term[i] == unknown_position.char)
-                    return;
-            }
-
-            // char is in word (and right number of times)
-            let num_instances_found = 0;
-            for (let i = 0; i < 5 && num_instances_found < unknown_position.instances; i++) {
-                if (term[i] == unknown_position.char) {
-                    num_instances_found ++;
-                    unaccounted_for = unaccounted_for.filter(j => i != j);
-                }
-            }
-            if (num_instances_found < unknown_position.instances)
-                return;
-        }
-
-        for (const miss of misses) {
-            for (const i of unaccounted_for)
-                if (term[i] == miss)
-                    return;
-        }
-        possible.push(term);
+        if (isPossible(terms, exact_matches, unknown_positions, misses))
+            possible.push(term);
     })
     return possible;
+}
+
+function isPossible(term, exact_matches, unknown_positions, misses) {
+    let accounted_for = [];
+    let unaccounted_for = [0, 1, 2, 3, 4];
+
+    for (const match of exact_matches) {
+        accounted_for.push(match.i)
+        if (term[match.i] != match.char)
+            return;
+    }
+
+    unaccounted_for = unaccounted_for.filter(i => !accounted_for.includes(i));
+    
+    for (const unknown_position of unknown_positions) {
+        // char is in wrong position
+        for (const i of unknown_position.incorrect_positions) {
+            if (term[i] == unknown_position.char)
+                return;
+        }
+
+        // char is in word (and right number of times)
+        let num_instances_found = 0;
+        for (let i = 0; i < 5 && num_instances_found < unknown_position.instances; i++) {
+            if (term[i] == unknown_position.char) {
+                num_instances_found ++;
+                unaccounted_for = unaccounted_for.filter(j => i != j);
+            }
+        }
+        if (num_instances_found < unknown_position.instances)
+            return;
+    }
+
+    for (const miss of misses) {
+        for (const i of unaccounted_for)
+            if (term[i] == miss)
+                return;
+    }
+    return true;
 }
 
 function sortTermsByRank(possible) {
