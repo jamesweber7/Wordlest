@@ -126,7 +126,7 @@ function sortTermsByExpectedPossibleRemainingSlow(possible) {
         })
         scores[index] = total_score;
         console.log(`${term} has score ${total_score}`);
-        console.log(`${index} / ${possible.length}`);
+        console.log(`${index+1} / ${possible.length}`);
     })
     
     const rankings = Array(possible.length);
@@ -208,7 +208,7 @@ function sortTermsByExpectedPossibleRemainingFast(possible) {
         }
         scores[index] = total_score;
         console.log(`${term} has score ${total_score}`);
-        console.log(`${index} / ${possible.length}`);
+        console.log(`${index+1} / ${possible.length}`);
     })
     
     const rankings = Array(possible.length);
