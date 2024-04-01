@@ -71,6 +71,81 @@ function isPossible(term, exact_matches, unknown_positions, misses) {
     return true;
 }
 
+// this one sorts based on how many remaining possible answers are expected after guess
+// I'm not entirely sure that this method is perfect, as it suggests "RAISE" is the best starting word, and I can't find many sources which agree
+// O(n³) - slow
+function sortTermsByExpectedPossibleRemaining(possible) {
+    const scores = Array(possible.length);
+    possible.forEach((term, index) => {
+        let total_score = 0;
+        possible.forEach(potential_answer => {
+            const matching = matchTerms(term, potential_answer);
+            const exact_matches = [];
+            const unknown_positions = [];
+            const misses = [];
+            for (let i = 0; i < term.length; i++) {
+                const char = term[i];
+                const rank = matching[i];
+                switch (rank) {
+                    case 'g':
+                        exact_matches.push({
+                            char: char,
+                            i: i
+                        });
+                        break;
+                    case 'y':
+                        let found = false;
+                        unknown_positions.forEach(unknown => {
+                            if (unknown.char == char) {
+                                found = true;
+                                unknown.incorrect_positions.push(i);
+                                unknown.instances = 0;
+                                for (let j = 0; j < 5; j++) {
+                                    if (term[j] == char && matching[j] == 'g' || matching[j] == 'y')
+                                        unknown.instances ++;
+                                }
+                            }
+                        });
+                        if (!found) {
+                            unknown_positions.push({
+                                char: char,
+                                incorrect_positions: [i],
+                                instances: 1
+                            })
+                        }
+                        break;
+                    case 'b':
+                        misses.push(char);
+                        break;
+                }
+            }
+            possible.forEach(possible_term => {
+                if (isPossible(possible_term, exact_matches, unknown_positions, misses))
+                    total_score ++;
+            })
+        })
+        scores[index] = total_score;
+        console.log(`${term} has score ${total_score}`);
+        console.log(`${index} / ${possible.length}`);
+    })
+    
+    const rankings = Array(possible.length);
+    for (let i = 0; i < rankings.length; i++) {
+        rankings[i] = {
+            score: scores[i],
+            term: possible[i]
+        }
+    }
+    rankings.sort((a, b) => b.score - a.score);
+
+    const sorted = Array(rankings.length);
+    rankings.forEach((ranking, i) => {
+        sorted[i] = ranking.term;
+    })
+
+    return sorted;
+}
+
 function sortTermsByRank(possible) {
     const scores = scorePossibleTerms(possible);
 
