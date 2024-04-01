@@ -87,38 +87,34 @@ function sortTermsByExpectedPossibleRemainingSlow(possible) {
             for (let i = 0; i < term.length; i++) {
                 const char = term[i];
                 const rank = matching[i];
-                switch (rank) {
-                    case 'g':
-                        exact_matches.push({
-                            char: char,
-                            i: i
-                        });
-                        break;
-                    case 'y':
-                        for (const unknown of unknown_positions) {
-                            if (unknown.char == char) {
-                                break;
-                            }
+                if (rank == 'g') {
+                    exact_matches.push({
+                        char: char,
+                        i: i
+                    });
+                } else if (rank == 'y' || rank == 'b') {
+                    for (const unknown of unknown_positions) {
+                        if (unknown.char == char) {
+                            break;
                         }
-                        let incorrect_positions = [];
-                        let instances = 0;
-                        for (let j = 0; j < 5; j++) {
-                            if (term[j] == char) {
-                                if (matching[j] == 'g' || matching[j] == 'y')
-                                    instances ++;
-                                if (matching[j] == 'y')
-                                    incorrect_positions.push(j);
-                            }
+                    }
+                    let incorrect_positions = [];
+                    let instances = 0;
+                    for (let j = 0; j < 5; j++) {
+                        if (term[j] == char) {
+                            if (matching[j] == 'g' || matching[j] == 'y')
+                                instances ++;
+                            if (matching[j] == 'y' || matching[j] == 'b')
+                                incorrect_positions.push(j);
+                            if (matching[j] == 'b')
+                                misses.push(char);
                         }
-                        unknown_positions.push({
-                            char: char,
-                            incorrect_positions: incorrect_positions,
-                            instances: instances
-                        })
-                        break;
-                    case 'b':
-                        misses.push(char);
-                        break;
+                    }
+                    unknown_positions.push({
+                        char: char,
+                        incorrect_positions: incorrect_positions,
+                        instances: instances
+                    })
                 }
             }
             possible.forEach(possible_term => {
@@ -153,7 +149,7 @@ function sortTermsByExpectedPossibleRemainingSlow(possible) {
 
 // This is faster than sortTermsByExpectedPossibleRemainingSlow.
 // 70,000 on n=100 - maybe is O(n²√n) with room to perform better? idk exactly what time complexity is
-// For some reason, this can produce a slightly different output than sortTermsByExpectedPossibleRemainingSlow. I'm really not sure why
+// this can produce a slightly different output than sortTermsByExpectedPossibleRemainingSlow
 function sortTermsByExpectedPossibleRemainingFast(possible) {
     let total_checks = 0;
     const scores = Array(possible.length);
@@ -169,38 +165,34 @@ function sortTermsByExpectedPossibleRemainingFast(possible) {
             for (let i = 0; i < term.length; i++) {
                 const char = term[i];
                 const rank = matching[i];
-                switch (rank) {
-                    case 'g':
-                        exact_matches.push({
-                            char: char,
-                            i: i
-                        });
-                        break;
-                    case 'y':
-                        for (const unknown of unknown_positions) {
-                            if (unknown.char == char) {
-                                break;
-                            }
+                if (rank == 'g') {
+                    exact_matches.push({
+                        char: char,
+                        i: i
+                    });
+                } else if (rank == 'y' || rank == 'b') {
+                    for (const unknown of unknown_positions) {
+                        if (unknown.char == char) {
+                            break;
                         }
-                        let incorrect_positions = [];
-                        let instances = 0;
-                        for (let j = 0; j < 5; j++) {
-                            if (term[j] == char) {
-                                if (matching[j] == 'g' || matching[j] == 'y')
-                                    instances ++;
-                                if (matching[j] == 'y')
-                                    incorrect_positions.push(j);
-                            }
+                    }
+                    let incorrect_positions = [];
+                    let instances = 0;
+                    for (let j = 0; j < 5; j++) {
+                        if (term[j] == char) {
+                            if (matching[j] == 'g' || matching[j] == 'y')
+                                instances ++;
+                            if (matching[j] == 'y' || matching[j] == 'b')
+                                incorrect_positions.push(j);
+                            if (matching[j] == 'b')
+                                misses.push(char);
                         }
-                        unknown_positions.push({
-                            char: char,
-                            incorrect_positions: incorrect_positions,
-                            instances: instances
-                        })
-                        break;
-                    case 'b':
-                        misses.push(char);
-                        break;
+                    }
+                    unknown_positions.push({
+                        char: char,
+                        incorrect_positions: incorrect_positions,
+                        instances: instances
+                    })
                 }
             }
             let group_score = 0;
