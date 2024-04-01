@@ -120,10 +120,92 @@ function sortTermsByExpectedPossibleRemaining(possible) {
                 }
             }
             possible.forEach(possible_term => {
-                if (isPossible(possible_term, exact_matches, unknown_positions, misses))
+                if (isPossible(possible_term, exact_matches, unknown_positions, misses)) {
+                    console.log(`answer ${potential_answer} and guess ${term}, ${possible_term} is possible`)
                     total_score ++;
+                }
             })
         })
+        scores[index] = total_score;
+        console.log(`${term} has score ${total_score}`);
+        console.log(`${index} / ${possible.length}`);
+    })
+    
+    const rankings = Array(possible.length);
+    for (let i = 0; i < rankings.length; i++) {
+        rankings[i] = {
+            score: scores[i],
+            term: possible[i]
+        }
+    }
+    rankings.sort((a, b) => b.score - a.score);
+
+    const sorted = Array(rankings.length);
+    rankings.forEach((ranking, i) => {
+        sorted[sorted.length - i - 1] = ranking.term;
+    })
+
+    return sorted;
+}
+
+// I think I may be able to make this O(n²) by removing from list of remaining things
+// nvmd, pretty sure I was onto nothing
+// idk maybe this could work? I think I got mixed up when I started this and took the wrong approach, but potentially initially had the right idea?
+function sortTermsByExpectedPossibleRemainingFast(possible) {
+    const scores = Array(possible.length);
+    possible.forEach((term, index) => {
+        let total_score = 0;
+        const potential_answers = [...possible];
+        while (potential_answers.length) {
+            const potential_answer = potential_answers.shift();
+            const matching = matchTerms(term, potential_answer);
+            const exact_matches = [];
+            const unknown_positions = [];
+            const misses = [];
+            for (let i = 0; i < term.length; i++) {
+                const char = term[i];
+                const rank = matching[i];
+                switch (rank) {
+                    case 'g':
+                        exact_matches.push({
+                            char: char,
+                            i: i
+                        });
+                        break;
+                    case 'y':
+                        let found = false;
+                        unknown_positions.forEach(unknown => {
+                            if (unknown.char == char) {
+                                found = true;
+                                unknown.incorrect_positions.push(i);
+                                unknown.instances = 0;
+                                for (let j = 0; j < 5; j++) {
+                                    if (term[j] == char && matching[j] == 'g' || matching[j] == 'y')
+                                        unknown.instances ++;
+                                }
+                            }
+                        });
+                        if (!found) {
+                            unknown_positions.push({
+                                char: char,
+                                incorrect_positions: [i],
+                                instances: 1
+                            })
+                        }
+                        break;
+                    case 'b':
+                        misses.push(char);
+                        break;
+                }
+            }
+            for (let i = 0; i < potential_answers.length; i++) {
+                if (isPossible(potential_answers[i], exact_matches, unknown_positions, misses)) {
+                    total_score ++;
+                    potential_answers.splice(i, 1);
+                    i--; // need to check this position again in next loop
+                }
+            }
+        }
         scores[index] = total_score;
         console.log(`${term} has score ${total_score}`);
         console.log(`${index} / ${possible.length}`);
@@ -230,10 +312,20 @@ function matchTerms(guess, answer) {
             const answer_instances = numInstances(answer, char);
             const num_matches = Math.min(guess_instances, answer_instances);
             let num_remaining_unknown_instances = num_matches;
+            // clear greens
+            for (let j = 0; j < 5 && num_remaining_unknown_instances > 0; j++) {
+                if (guess[j] == char) {
+                    if (matching[j] == exact_match) {
+                        num_remaining_unknown_instances --;
+                    }
+                }
+            }
+            // create yellows
             for (let j = 0; j < 5 && num_remaining_unknown_instances > 0; j++) {
                 if (guess[j] == char) {
                     if (matching[j] == miss) {
                         matching[j] = unknown_position;
+                        num_remaining_unknown_instances --;
                     } else {
                         num_remaining_unknown_instances --;
                     }
