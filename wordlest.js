@@ -75,6 +75,7 @@ function isPossible(term, exact_matches, unknown_positions, misses) {
 // I'm not entirely sure that this method is perfect, as it suggests "RAISE" is the best starting word, and I can't find many sources which agree
 // O(n³) - slow
 function sortTermsByExpectedPossibleRemaining(possible) {
+    let total_checks = 0;
     const scores = Array(possible.length);
     possible.forEach((term, index) => {
         let total_score = 0;
@@ -121,9 +122,10 @@ function sortTermsByExpectedPossibleRemaining(possible) {
             }
             possible.forEach(possible_term => {
                 if (isPossible(possible_term, exact_matches, unknown_positions, misses)) {
-                    // console.log(`answer ${potential_answer} and guess ${term}, ${possible_term} is possible`)
                     total_score ++;
+                    // console.log(`answer ${potential_answer}, guess ${term}, possible ${possible_term}`)
                 }
+                total_checks ++;
             })
         })
         scores[index] = total_score;
@@ -145,6 +147,7 @@ function sortTermsByExpectedPossibleRemaining(possible) {
         sorted[sorted.length - i - 1] = ranking.term;
     })
 
+    console.log("Total Checks: ", total_checks)
     return sorted;
 }
 
@@ -152,12 +155,20 @@ function sortTermsByExpectedPossibleRemaining(possible) {
 // nvmd, pretty sure I was onto nothing
 // idk maybe this could work? I think I got mixed up when I started this and took the wrong approach, but potentially initially had the right idea?
 function sortTermsByExpectedPossibleRemainingFast(possible) {
+    let total_checks = 0;
     const scores = Array(possible.length);
     possible.forEach((term, index) => {
         let total_score = 0;
         const potential_answers = [...possible];
+        let prev;
         while (potential_answers.length) {
-            const potential_answer = potential_answers.shift();
+            // const potential_answer = potential_answers.shift();
+            const potential_answer = potential_answers[0];
+            if (prev == potential_answer) {
+                console.log("uh oh!", term, potential_answer);
+                throw "ah"
+            }
+            prev = potential_answer;
             const matching = matchTerms(term, potential_answer);
             const exact_matches = [];
             const unknown_positions = [];
@@ -198,13 +209,16 @@ function sortTermsByExpectedPossibleRemainingFast(possible) {
                         break;
                 }
             }
+            let group_score = 0;
             for (let i = 0; i < potential_answers.length; i++) {
                 if (isPossible(potential_answers[i], exact_matches, unknown_positions, misses)) {
-                    total_score ++;
+                    group_score ++;
                     potential_answers.splice(i, 1);
-                    i--; // need to check this position again in next loop
+                    i--; // need to check this position again in next for loop
                 }
+                total_checks ++;
             }
+            total_score += group_score**2;
         }
         scores[index] = total_score;
         console.log(`${term} has score ${total_score}`);
@@ -225,6 +239,7 @@ function sortTermsByExpectedPossibleRemainingFast(possible) {
         sorted[sorted.length - i - 1] = ranking.term;
     })
 
+    console.log("Total Checks: ", total_checks)
     return sorted;
 }
 
@@ -323,9 +338,12 @@ function matchTerms(guess, answer) {
             // create yellows
             for (let j = 0; j < 5 && num_remaining_unknown_instances > 0; j++) {
                 if (guess[j] == char) {
-                    if (matching[j] == miss)
+                    if (matching[j] == miss) {
                         matching[j] = unknown_position;
-                    num_remaining_unknown_instances --;
+                    }
+                    if (matching[j] == miss || matching[j] == unknown_position) {
+                        num_remaining_unknown_instances --;
+                    }
                 }
             }
         }
