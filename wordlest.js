@@ -26,7 +26,7 @@ function findPossibleTerms(terms, exact_matches, unknown_positions, misses) {
     // misses: ['p', 'o', 'n']
     let possible = [];
     terms.forEach(term => {
-        if (isPossible(terms, exact_matches, unknown_positions, misses))
+        if (isPossible(term, exact_matches, unknown_positions, misses))
             possible.push(term);
     })
     return possible;
