@@ -121,7 +121,7 @@ function sortTermsByExpectedPossibleRemaining(possible) {
             }
             possible.forEach(possible_term => {
                 if (isPossible(possible_term, exact_matches, unknown_positions, misses)) {
-                    console.log(`answer ${potential_answer} and guess ${term}, ${possible_term} is possible`)
+                    // console.log(`answer ${potential_answer} and guess ${term}, ${possible_term} is possible`)
                     total_score ++;
                 }
             })
@@ -323,12 +323,9 @@ function matchTerms(guess, answer) {
             // create yellows
             for (let j = 0; j < 5 && num_remaining_unknown_instances > 0; j++) {
                 if (guess[j] == char) {
-                    if (matching[j] == miss) {
+                    if (matching[j] == miss)
                         matching[j] = unknown_position;
-                        num_remaining_unknown_instances --;
-                    } else {
-                        num_remaining_unknown_instances --;
-                    }
+                    num_remaining_unknown_instances --;
                 }
             }
         }
